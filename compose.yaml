@@ -1,0 +1,27 @@
+services:
+  server:
+    build:
+      context: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    depends_on:
+      ui:
+        condition: service_healthy
+
+  ui:
+    image: node:lts
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./ui:/ui
+      - /ui/node_modules
+    working_dir: /ui
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:5173"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    entrypoint: bash -c "npm ci && npm run dev -- --host 0.0.0.0"
