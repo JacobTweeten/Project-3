@@ -12,6 +12,8 @@ uvicorn = "^0.29.0"
 flake8 = "^7.0.0"
 isort = "^5.13.2"
 black = "^24.4.1"
+sqlalchemy = {extras = ["asyncio"], version = "^2.0.29"}
+asyncpg = "^0.29.0"
 
 
 [build-system]
