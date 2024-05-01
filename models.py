@@ -1,7 +1,6 @@
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.schema import MetaData
 
-
 class AutoModels:
     def __init__(self, engine):
         self._base = None
@@ -24,3 +23,4 @@ class AutoModels:
         instance = AutoModels(engine)
         await instance._async_init()
         return instance
+    
