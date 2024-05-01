@@ -3,7 +3,8 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.future import select
 from fastapi.middleware.cors import CORSMiddleware  # Import CORS middleware
-
+from fastapi.responses import HTMLResponse
+from fastapi import Path
 
 from models import AutoModels
 
@@ -51,5 +52,29 @@ async def films():
                 }
             )
     return results
+
+@app.get("/film/{id}", response_class=HTMLResponse)
+async def film(id: int):
+    with open("ui/dist/film.html") as file:
+        return file.read()
+    
+@app.get("/api/v1/films/{id}")
+#Using fastAPI's path
+async def film(id: int = Path(..., title="The ID of the film to retrieve")):
+    Film = await auto_models.get("film")
+
+    async with AsyncSession(engine) as session:
+        film = await session.execute(select(Film).filter_by(film_id=id))
+        film = film.scalar_one_or_none()
+
+        film_data = {
+            "title": film.title,
+            "description": film.description,
+            "id": film.film_id,
+        }
+
+    return film_data
+
+
 
 app.mount("/", StaticFiles(directory="ui/dist", html=True), name="ui")
