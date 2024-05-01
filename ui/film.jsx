@@ -8,18 +8,40 @@ function FilmView() {
     const path = window.location.pathname;
     const id = path.split("/")[2];
 
-    fetch(`/api/v1/films/${id}`)
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => setFilm(data));
+    fetch(`/api/v1/film/${id}`)
+      .then((response) => response.json())
+      .then((data) => setFilm(data))
+      .catch((error) => console.error("Error fetching film data:", error));
   }, []);
+
+  const handleDelete = () => {
+    const path = window.location.pathname;
+    const id = path.split("/")[2];
+
+    fetch(`/api/v1/film/${id}`, {
+      method: "DELETE",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.ok) {
+          window.location.href = "/";
+        } else {
+          console.error("Error deleting film:", data.reason);
+        }
+      })
+      .catch((error) => console.error("Error deleting film:", error));
+  };
+
+  if (!film) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <div>
       <h1>{film.title}</h1>
       <p>{film.description}</p>
-      <p>ID :{film.id}</p>
+      <p>ID: {film.id}</p>
+      <button onClick={handleDelete}>Delete</button>
       <a href="/">Back to List View</a>
     </div>
   );
